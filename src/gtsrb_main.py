@@ -6,36 +6,42 @@ from torchvision.transforms import ToTensor
 import torch.nn.functional as F
 import pywt
 import numpy as np
+from PIL import Image
 
 class DWT2(object):
 
-	def __init__(self, wavelet):
-		self.wavelet = wavelet
+    def __init__(self, wavelet):
+        self.wavelet = wavelet
 
-	def __call__(self, sample):
+    def __call__(self, sample):
 
-		sample_array = np.array(sample)
-		sample_r = sample_array[:, :, 0]
-		sample_g = sample_array[:, :, 1]
-		sample_b = sample_array[:, :, 2]
+        sample_array = np.array(sample)
+        sample_r = sample_array[:, :, 0]
+        sample_g = sample_array[:, :, 1]
+        sample_b = sample_array[:, :, 2]
 
-		coeffs2_r = pywt.dwt2(sample_r, self.wavelet)
-		cA_r, (cH_r, cV_r, cD_r) = coeffs2_r
-		wave_param_r = np.vstack((np.hstack((cA_r, cH_r)), np.hstack((cV_r, cD_r))))
+        coeffs2_r = pywt.dwt2(sample_r, self.wavelet)
+        cA_r, (cH_r, cV_r, cD_r) = coeffs2_r
+        wave_param_r = np.vstack((np.hstack((cA_r, cH_r)), np.hstack((cV_r, cD_r))))
 
-		coeffs2_g = pywt.dwt2(sample_g, self.wavelet)
-		cA_g, (cH_g, cV_g, cD_g) = coeffs2_g
-		wave_param_g = np.vstack((np.hstack((cA_g, cH_g)), np.hstack((cV_g, cD_g))))
+        coeffs2_g = pywt.dwt2(sample_g, self.wavelet)
+        cA_g, (cH_g, cV_g, cD_g) = coeffs2_g
+        wave_param_g = np.vstack((np.hstack((cA_g, cH_g)), np.hstack((cV_g, cD_g))))
 
-		coeffs2_b = pywt.dwt2(sample_b, self.wavelet)
-		cA_b, (cH_b, cV_b, cD_b) = coeffs2_b
-		wave_param_b = np.vstack((np.hstack((cA_b, cH_b)), np.hstack((cV_b, cD_b))))
+        coeffs2_b = pywt.dwt2(sample_b, self.wavelet)
+        cA_b, (cH_b, cV_b, cD_b) = coeffs2_b
+        wave_param_b = np.vstack((np.hstack((cA_b, cH_b)), np.hstack((cV_b, cD_b))))
 
-		wave_param = np.array([wave_param_r, wave_param_g, wave_param_b])
-		wave_param = np.transpose(wave_param, (1, 2, 0))
+        wave_param = np.array([wave_param_r, wave_param_g, wave_param_b])
+        wave_param_img = np.transpose(wave_param, (1, 2, 0))
 
-		return np.float32(wave_param)
-		# return sample
+        sample.show()
+        img = Image.fromarray(wave_param_img.astype(np.uint8), mode='RGB')
+        img.show()
+
+        import pdb; pdb.set_trace()
+        return np.float32(wave_param)
+        # return sample
 
 
 data_transforms = transforms.Compose([
